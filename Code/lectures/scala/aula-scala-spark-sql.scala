@@ -98,6 +98,8 @@ val rdd_one = sc.parallelize(Seq(1,2,3))
 
 val rdd_two = sc.parallelize(Seq(4,5,6))
 
+
+
 val rdd_one = sc.parallelize(Seq(1,2,3))
 
 rdd_one.take(10)
@@ -105,6 +107,8 @@ rdd_one.take(10)
 val rdd_two = sc.parallelize(Seq(4,5,6))
 
 rdd_two.take(10)
+
+
 
 val unionRDD = rdd_one.union(rdd_two)
 
@@ -125,7 +129,18 @@ unionRDD.take(10)
 import org.apache.spark.sql.types._
 
 //Nessa trecho do códico vamos criar um schema novo do tipo StructType em que vamos adicionar as nossas colunas já com o nome e o seu respectivo tipo 
-val recordSchema = new StructType().add("sample", "long").add("cThick", "integer").add("uCSize", "integer").add("uCShape", "integer").add("mAdhes", "integer").add("sECSize", "integer").add("bNuc", "integer").add("bChrom", "integer").add("nNuc", "integer").add("mitosis", "integer").add("clas", "integer")
+val recordSchema = new StructType()
+	.add("sample", "long")
+	.add("cThick", "integer")
+	.add("uCSize", "integer")
+	.add("uCShape", "integer")
+	.add("mAdhes", "integer")
+	.add("sECSize", "integer")
+	.add("bNuc", "integer")
+	.add("bChrom", "integer")
+	.add("nNuc", "integer")
+	.add("mitosis", "integer")
+	.add("clas", "integer")
 
 //Vamos determinar um caminho padrão somente para que o código fique menos verboso 
 // val ROOT_DIR = "/Users/flavio.clesio/Documents/spark-2.1.0/data/"
@@ -135,7 +150,10 @@ val ROOT_DIR = "/Users/flavio.clesio/Desktop/"
 //Neste snippet vamos criar um dataframe em que vamos passar a leitura de um arquivo csv
 //que o spark implicitamente sabe que é delimitado por virgula, sem o header, usando o nosso schema determinado anteriormente,
 //e carregando os dados 
-val df = spark.read.format("csv").option("header", false).schema(recordSchema).load(ROOT_DIR + "breast-cancer-wisconsin.data")
+val df = spark.read.format("csv")
+	.option("header", false)
+	.schema(recordSchema)
+	.load(ROOT_DIR + "breast-cancer-wisconsin.data")
 
 //Link: https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.data
 
@@ -288,8 +306,11 @@ df.printSchema()
 //Selecionando apenas a coluna nome
 df.select("name").show()
 
+
 //Seleciona todos os elementos e aumenta a idade em um ano
 df.select($"name", $"age" + 1).show()
+
+df.select($"name", $"age", $"age" + 1).show()
 
 //Filtra pessoas com mais de 21 anos
 df.filter($"age" > 21).show()

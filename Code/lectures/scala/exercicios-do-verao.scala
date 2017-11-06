@@ -27,7 +27,7 @@
 // 04) Qual foi a média de pontos dos times que terminaram entre a décima segunda e a décima oitava posição?
 // 05) Quantos cartões amarelos os times com mais de 50 pontos e menos de 60 tiveram? 
 // 06) Quais foram os 3 primeiros times que tomaram cartão vermelho no torneio?
-// 07)
+// 07) Quais foram os 3 times que tomaram menos cartões amarelos?
 // 08) Quem foi o campeão do torneio?
 // 09)
 // 10) Qual foi a média de gols pró (GP) dos times que terminaram entre o sexto lugar e o décimo terceiro lugar e que tiveram mais de 35 pontos?

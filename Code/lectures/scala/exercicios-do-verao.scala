@@ -25,19 +25,19 @@
 // 02)
 // 03)
 // 04) Qual foi a média de pontos dos times que terminaram entre a décima segunda e a décima oitava posição?
-// 05)
-// 06)
+// 05) Quantos cartões amarelos os times com mais de 50 pontos e menos de 60 tiveram? 
+// 06) Quais foram os 3 primeiros times que tomaram cartão vermelho no torneio?
 // 07)
 // 08) Quem foi o campeão do torneio?
 // 09)
 // 10) Qual foi a média de gols pró (GP) dos times que terminaram entre o sexto lugar e o décimo terceiro lugar e que tiveram mais de 35 pontos?
-// 11)
-// 12)
+// 11) Quem foi o time que tomou menos cartões amarelos (GV) dos rebaixados?
+// 12) Quem foi o time que ficou com mais de 40 pontos, com menos de 30 gols pró (GP)?
 // 13)
 // 14) Qual foi o time que terminou em último lugar?
 // 15)
-// 16)
+// 16) Qual é a quantidade cartões amarelos (GA) distribuídos no total?
 // 17) Qual foi a média de pontos entre os times que terminaram acima do sexto lugar?
-// 18)
-// 19)
-// 20)
+// 18) Quantos pontos em média fizeram os classificados para a libertadores (i.e. entre o campeão e o sexto lugar)?
+// 19) Quantos pontos em média fizeram os times rebaixados (i.e. entre o décimo sétimo e o vigésimo)?
+// 20) Qual foram os times que terminaram a competição com menos de 50 cartões amarelos (GA) e mais de 50 pontos?

@@ -21,23 +21,23 @@
 // 20) 
 
 // Dataframe: brasileiro_2015.json
-// 01) 
+// 01) Qual foi o time que terminou em décimo terceiro lugar? 
 // 02)
 // 03)
-// 04)
+// 04) Qual foi a média de pontos dos times que terminaram entre a décima segunda e a décima oitava posição?
 // 05)
 // 06)
 // 07)
-// 08)
+// 08) Quem foi o campeão do torneio?
 // 09)
-// 10)
+// 10) Qual foi a média de gols pró (GP) dos times que terminaram entre o sexto lugar e o décimo terceiro lugar e que tiveram mais de 35 pontos?
 // 11)
 // 12)
 // 13)
-// 14)
+// 14) Qual foi o time que terminou em último lugar?
 // 15)
 // 16)
-// 17)
+// 17) Qual foi a média de pontos entre os times que terminaram acima do sexto lugar?
 // 18)
 // 19)
 // 20)

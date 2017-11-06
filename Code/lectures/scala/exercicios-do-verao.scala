@@ -22,7 +22,7 @@
 // 03) Quais foram os times com mais cartões vermelhos (GV) dos classificados para a libertadores (i.e. do primeiro até o sexto colocado)?
 // 04) Qual foi a média de pontos dos times que terminaram entre a décima segunda e a décima oitava posição?
 // 05) Quantos cartões amarelos os times com mais de 50 pontos e menos de 60 tiveram? 
-// 06) Quais foram os 3 primeiros times que tomaram cartão vermelho no torneio?
+// 06) Quais foram os 3 times entre os 6 primeiros colocados que mais tomaram cartão vermelho no torneio?
 // 07) Quais foram os 3 times que tomaram menos cartões amarelos?
 // 08) Quem foi o campeão do torneio?
 // 09) Qual foi a média de carões vermelhos (GV) do campeonato?

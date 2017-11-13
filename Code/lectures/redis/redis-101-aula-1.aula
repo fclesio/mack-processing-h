@@ -57,3 +57,22 @@ $ tar xzf redis-4.0.2.tar.gz
 $ cd redis-4.0.2
 
 $ make
+
+-------------------
+3) Hello Redis!!!
+-------------------
+
+3.1) Com os binários compilados, para instanciar o servidor execute:
+$ src/redis-server
+
+3.2) Agora vamos interagir com o cluster do Redis, usando a sua API cliente
+$ src/redis-cli
+
+3.3) Primeiramente vamos testar em uma outra aba no terminal para ver se o serviço do Redis está online e ativo. 
+$ src/redis-cli ping
+
+3.4) Já com o Redis instanciado, vamos criar uma chave chamada aula e vamos salvar a expressão/string "Hello Redis". 
+redis> SET aula "Hello Redis!"
+
+3.5) Vamos buscar a nossa chave aula e verificar qual valor está atribuída a ela
+redis> GET aula

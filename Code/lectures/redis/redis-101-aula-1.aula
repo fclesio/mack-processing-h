@@ -1,0 +1,59 @@
+-------------
+--Redis 101--
+-------------
+
+-----------------------------------
+1) Uma breve história no tempo...
+-----------------------------------
+
+1.1) Um pouco sobre o Redis e o que ele resolve...
+ - REmote DIctionary Server
+ - Criado por Salvatore Sanfilippo em 2009
+ - Blog do Saltarore Sanfilippo (antirez.com)
+ - Ele chama o Redis de "Servidor de Estrutura de Dados"
+ - Post lendário sobre o programador que pode fazer 10x mais (antirez. com/news/112)
+ - Banco de dados in-Memory
+ - Com atomicidade e durabilidade de relacional, capacidade granular de um transacional, com velocidade de NoSQL.   
+ - Chave valor (K,V)
+ - Atômico e com Durabilidade
+ - Escrito em C
+ - Criado para arquiteturas para AOF (append-only file)
+ - Projeto no github: github.com/antirez/redis
+ - Suporta inúmeras abstrações de dados
+ - Usado arquiteturalmente como cache de sessão
+ - Camada de pré-persistência no relacional
+ - Contadores
+ - Sistema de filas (broker)
+ - Real-time em analytics
+ - Listagem do tipo "Top-k" com Full page cache
+ - Full-text search sem as dores de cabeça dos relacionais e engines de otimização
+ - WYSIWYG
+ - Spark + Redis = <3
+ - High Frequency/High Speed Transactions
+ - "Redis é como graxa. Geralmente é usado para lubrificar partes móveis e manter elas trabalhando de forma suave reduzindo a fricção e acelerando a sua função principal. (REDMOND, Eric; WILSON, Jim. Seven Databases in Seven Weeks)
+
+1.2) Estrutura de dados
+O principio é que cada chave terá um número "n" de valores
+Os valores podem ser:
+ - Listas de strings
+ - Conjuntos de strings (ordenados ou não)
+ - Tabelas hash
+
+1.3) Arquitetura básica
+Características para rodar em produção 
+ - Suporta replicação master-slave
+ - Suporta Publicação/Assinaturas (Pub-Sub)
+ - Tem o conceito de TTL nas chaves
+
+--------------
+2) Instalação
+--------------
+
+2.1) Realize o download e faça a extração e compile o Redis 
+$ wget http://download.redis.io/releases/redis-4.0.2.tar.gz
+
+$ tar xzf redis-4.0.2.tar.gz
+
+$ cd redis-4.0.2
+
+$ make

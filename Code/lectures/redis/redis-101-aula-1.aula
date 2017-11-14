@@ -76,3 +76,101 @@ redis> SET aula "Hello Redis!"
 
 3.5) Vamos buscar a nossa chave aula e verificar qual valor está atribuída a ela
 redis> GET aula
+
+----------------------------------------
+4) Primeiramente as primeiras coisas...
+----------------------------------------
+4.1) Podemos usar o comando help quando tivermos dúvida em relação a algum comando ou a sua utilização
+redis> help GET
+
+redis> help HSET
+
+4.2) Para sabermos se o servidor do Redis está em pé, basta executar o comando ping e checar se o servidor está ativo. 
+redis> ping
+
+------------------------
+4) Data Types básicos
+------------------------
+4.1) Como o Redis é um banco de dados chave e valor, precisamos apenas indicar a chave para buscar o conjunto de valores. 
+no nosso exemplo, vamos usar o comando SET para armazenar na chave server:name o valor fido
+redis> SET server:name "fido"
+
+4.2) Para buscar o valor, basta usarmos o comando GET
+redis> GET server:name
+
+4.3) Nas operações em bancos NoSQL podemos realizar a deleção de registros usando o comando DEL dado a associação da chave e do valor.
+Neste caso vamos atibuir o valor 10 na chave connections
+redis> SET connections 10
+
+4.4) Agora podemos usar o INCR para aumentar o valor na chave connections da seguinte forma
+redis> INCR connections
+
+redis> INCR connections
+
+Vamos ver o valor do nosso connections 
+redis> GET connections
+
+4.5) Realizaremos a deleção do registro usando o DEL
+redis> DEL connections
+
+Mesmo com o objeto deletado, se utilizarmos o connections, qual número teremos?
+redis> INCR connections
+
+As operações com incremento devem ser utilizadas com o INCR e não com algum tipo de soma em uma variável, pois ele é o mecanismo no qual o redis consegue garantir a persistência em caso de multiplos SET's em uma chave. 
+
+4.6) No Redis podemos usar o conceito de "Time To Live" para controlar a expiração de objetos. Podemos usar os comandos EXPIRE ou TTL para fazer isso. Vejamos. 
+
+Vamos fazer o SET de um valor chamado "Redis Demo" na chave resource:lock
+redis> SET resource:lock "Redis Demo"
+
+Com a nosa chave com o seu valor devidamente atribuído, vamos colocar essa chave para expirar em 120 segundos.
+redis> EXPIRE resource:lock 120
+
+Para monitorar o quanto a chave irá durar, vamos usar o comando TTL para acompanharmos
+redis> TTL resource:lock 
+
+Depois de um tempo...
+redis> TTL resource:lock 
+
+Se usarmos o comando TTL e ele estiver como -2 significa que a chave não existe mais. Caso a chave esteja em -1 significa que ela nunca vai expirar. Caso seja usado o comando SET para a geração de uma chave ou sobre um objeto já existente, o TTL será resetado. 
+redis> SET resource:lock "Redis Demo 1"
+
+redis> EXPIRE resource:lock 120 
+
+redis> TTL resource:lock 
+
+redis> SET resource:lock "Redis Demo 2" 
+
+redis> TTL resource:lock 
+
+
+4.7) Até agora aprendemos algumas características em relação à atribuição de valores usando o Redis, mas no caso vamos em estruturas de dados um pouco mais complexas. Neste caso, vamos para as listas. Os comando que veremos abaixo serão RPUSH, LPUSH, LLEN, LRANGE, LPOP, e RPOP.
+
+O RPUSH coloca um valor no final da lista.
+redis> RPUSH friends "Alice"
+
+redis> RPUSH friends "Bob"
+
+O comando LPUSH coloca um valor no início da lista
+redis> LPUSH friends "Sam"
+
+O comando LRANGE dá um subset de uma lista; e podem ser usados dois parâmetros para buscar o range desejado em que o primeiro parâmetro é o índice do primeiro elemento a ser buscado, e o último parâmetro é o índice do último elemento da lista. Se o valor estiver como -1, significa que precisamos buscar desde o fim da lista.
+redis> LRANGE friends 0 -1 
+
+redis> LRANGE friends 0 1
+
+redis> LRANGE friends 1 2
+
+O comando LLEN retorna o tamanho da lista
+redis>LLEN friends
+
+O comando LPOP remove o primeiro elemento da lista e exibe 
+redis> LPOP friends
+
+O RPOP remove o último elemento da lista e realiza a exibição
+redis> RPOP friends
+
+E como podemos checar agora temos somente um elemento na lista
+redis> LLEN friends
+
+redis> LRANGE friends 0 -1

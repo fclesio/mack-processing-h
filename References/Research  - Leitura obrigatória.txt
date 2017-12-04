@@ -1,0 +1,20 @@
+Technology Radar ThoughtWorks 
+https://www.thoughtworks.com/pt/Radar
+
+Magic Quadrant for Operational Database Management Systems
+https://www.gartner.com/doc/reprints?id=1-3JD7HF0&ct=161005&st=sb
+
+Gartner 2017 Magic Quadrant for Data Science Platforms: gainers and losers
+https://www.kdnuggets.com/2017/02/gartner-2017-mq-data-science-platforms-gainers-losers.html
+
+Gartner 2016 Magic Quadrant for Advanced Analytics Platforms: gainers and losers
+https://www.kdnuggets.com/2016/02/gartner-2016-mq-analytics-platforms-gainers-losers.html
+
+Gartner 2015 Magic Quadrant for Advanced Analytics Platforms: who gained and who lost
+https://www.kdnuggets.com/2015/02/gartner-2015-magic-quadrant-advanced-analytics-platforms.html
+
+Gartner 2014 Magic Quadrant for Advanced Analytics Platforms – view report
+https://www.kdnuggets.com/2014/03/rapidminer-leader-gartner-2014-magic-quadrant-advanced-analytics-platforms.html
+
+Forester Research
+https://www.forrester.com/search?N=10001&range=504005&sort=3&searchRefinement=reports

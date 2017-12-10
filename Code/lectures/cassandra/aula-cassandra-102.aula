@@ -1,0 +1,385 @@
+--------------------------------
+1) Setup inicial do Cassandra
+--------------------------------
+
+1.1)Vamos checar a versão do Java
+$ java -version
+
+1.2) Instalação do Cassandra
+$ brew install cassandra
+$ pip install cassandra-driver cql
+$ cassandra
+
+1.3) Entrar na pasta do Cassandra
+$ cd apache-cassandra-3.11.1
+
+1.4) Instanciar o Cassandra
+$ bin/cassandra -f
+
+1.5) Abra uma outra janela, e instancie o client do Cassandra no seu cluster local
+$ bin/cqlsh localhost
+
+1.6) Para ver o status do cluster execute o comando abaixo
+$ bin/nodetool status
+
+1.7) Para completar comandos com o tab, realize a instalação do "readline"
+$ sudo easy_install readline
+
+
+---------------------------------------
+2) Comandos iniciais com o Cassandra
+---------------------------------------
+
+2.1) Agora vamos criar um keyspace que é o equivalente a uma base de dados de um banco relacional
+
+DROP KEYSPACE mack_database;
+
+CREATE KEYSPACE "mack_database"
+WITH REPLICATION = {
+	'class': 'SimpleStrategy', 'replication_factor': 1};
+
+DESCRIBE mack_database
+
+ALTER KEYSPACE mack_database WITH REPLICATION =
+  {'class' : 'NetworkTopologyStrategy', 'dc1' : 3, 'dc2' : 2};
+
+DESCRIBE mack_database
+
+ALTER KEYSPACE "mack_database" WITH REPLICATION =
+  { 'class' : 'SimpleStrategy', 'replication_factor' : 3 };
+
+SimpleStrategy é opção padrão quando não temos inúmeros data centers e o replication_factor é o valor no qual se determina quantas cópias de cada dado será mantido no cluster.
+
+
+2.2) Vamos usar o nosso keyspace
+USE mack_database;
+
+
+2.3) Vamos criar uma tabela
+CREATE TABLE "alunos" (
+"nome" text PRIMARY KEY,
+"email" text,
+"encrypted_password" blob
+);
+
+
+A tabela pode ser otimizada na sua criação como caching, compressão, garbage collection, e read repair.
+
+O Cassandra sempre trabalha com o conceito de dados, então diferentemente de um banco de dados relacional comum. Isso significa que os valores NULL não existem no Cassandra, isso é, se alguma coluna estiver com o valor NULL significa que não tem dados ali. 
+
+O Cassandra também não suporta colunas como DEFAULT
+
+O Cassandra não possuí o conceito de validação de dados como limites de caracteres na coluna ou outros tipos de constraints.
+
+
+Tipos
+Strings
+ - text
+ - ascii
+Inteiros
+ - int
+ - bigint
+ - varint 
+Flutuante (float)
+Data
+ - hour
+UUIS
+Boolean
+Blob
+
+2.4) Inserção de dados
+INSERT INTO "alunos" ("nome", "email", "encrypted_password") 
+VALUES ('clesio','clesio@gmail.com',0x8914977ed729792e403da53024c6069a9158b8c4);
+
+2.5) Inserção parcial
+INSERT INTO "alunos" ("nome", "encrypted_password")
+VALUES ('flavio',0x10920941a69549d33aaee6116ed1f47e19b8e713);
+
+Observação: Somente valores determinados via insert que são considerados no armazenamento do Cassandra, isto é não há alocação de espaço neste banco
+
+
+---------------------------------------
+3) Seleção de dados no Cassandra
+---------------------------------------
+
+3.1) Seleção de dados
+SELECT * FROM "alunos"
+WHERE "nome" = 'clesio';
+
+3.2) SELECT "nome", "encrypted_password" FROM "alunos"
+WHERE "nome" = 'clesio';
+
+3.3) Dados que não existem
+SELECT * FROM "alunos"
+WHERE "nome" = 'bogus';
+
+SELECT * FROM "alunos"
+WHERE "nome" IN ('clesio', 'flavio');
+
+SELECT * FROM "alunos";
+
+3.4) Paginação dos resultados
+INSERT INTO "alunos" ("nome", "email", "encrypted_password")
+VALUES ('fclesio','fclesio@gmail.com',0xed3d8299b191b59b7008759a104c10af3db6e63a);
+
+INSERT INTO "alunos" ("nome", "email", "encrypted_password")
+VALUES ('flavioc','flavioc@gmail.com',0x6d1d90d92bbab0012270536f286d243729690a5b);
+
+SELECT * FROM "alunos"
+WHERE "nome" > 'clesio'
+LIMIT 2;
+
+SELECT "nome", token("nome")
+FROM "alunos";
+
+SELECT * FROM "alunos"
+WHERE token("nome") > token('clesio')
+LIMIT 2;
+
+Quando formos utilizarmos chaves compostas, temos que ter em mente que em dois cenários que são a) as linhas devem ser logicamente agrupadas por uma determinada propriedade, e as linhas devem ser acessíveis por uma determinada ordem; e vamos usar as chaves compostas para atender esses dois requisitos
+
+
+CREATE TABLE "alunos_status_updates" (
+"nome" text,
+"id" timeuuid,
+"body" text,
+PRIMARY KEY ("nome", "id")
+);
+
+DROP TABLE "alunos";
+
+CREATE TABLE "alunos" (
+"nome" text,
+"email" text,
+"encrypted_password" blob,
+PRIMARY KEY ("nome")
+);
+
+
+INSERT INTO "alunos_status_updates" ("nome", "id", "body")
+VALUES ('Clesio',76e7a4d0-e796-11e3-90ce-5f98e903bf02,'Realizando os primeiros comandos no Cassandra.');
+
+INSERT INTO "alunos_status_updates" ("nome", "id", "body")
+VALUES ('Flavio',97719c50-e797-11e3-90ce-5f98e903bf02,'Mostrando os princípios de chaveamento no Cassandra.');
+
+SELECT * FROM "alunos_status_updates";
+
+Usando a função DATEOF que retorna o resultado de uma coluna contendo o timestamp
+Extração de Timestamps
+SELECT "nome", "id", "body", DATEOF("id")
+FROM "alunos_status_updates";
+
+A função UNIXTIMESTAMPOF retorna o número de milisegundos que se passaram desde 1 jan 1970
+SELECT "nome", "id", "body", UNIXTIMESTAMPOF("id")
+FROM "alunos_status_updates"
+
+SELECT * FROM "alunos_status_updates"
+WHERE "nome" = 'Clesio'
+AND "id" = 76e7a4d0-e796-11e3-90ce-5f98e903bf02;
+
+
+
+
+
+Usando o now() para gerar o UUID
+INSERT INTO "alunos_status_updates" ("nome", "id", "body")
+VALUES ('Clesio', NOW(), 'Clesio Update 1');
+
+INSERT INTO "alunos_status_updates" ("nome", "id", "body")
+VALUES ('Flavio', NOW(), 'Flavio Update 1');
+
+INSERT INTO "alunos_status_updates" ("nome", "id", "body")
+VALUES ('Clesio', NOW(), 'Clesio Update 2');
+
+INSERT INTO "alunos_status_updates" ("nome", "id", "body")
+VALUES ('Flavio', NOW(), 'Flavio Update 2');
+
+INSERT INTO "alunos_status_updates" ("nome", "id", "body")
+VALUES ('Clesio', NOW(), 'Clesio Update 3');
+
+INSERT INTO "alunos_status_updates" ("nome", "id", "body")
+VALUES ('Flavio', NOW(), 'Flavio Update 3');
+
+SELECT "nome", "id", "body", UNIXTIMESTAMPOF("id")
+FROM "alunos_status_updates";
+
+Podemos reparar que com a modificação no chaveamento da tabela, a disposição no retorno dos outputs são modificados
+
+
+
+
+------------------------------------------------------------------------------
+4) Criando os User Defined Types para atachar múltiplos dados em uma coluna
+------------------------------------------------------------------------------
+
+4.1) Vamos criar um user defined type chamado endereço em que esse tipo receberá múltiplos dados dos endereços dos alunos
+CREATE TYPE mack_database.endereco (
+  rua text,
+  cidade text,
+  cep int,
+  telefone set<text>
+);
+
+4.2) Aqui vamos criar um UDT para o nome dos funcionários
+CREATE TYPE mack_database.nome_completo (
+  primeiro_nome text,
+  ultimo_nome text
+);
+
+4.3) Aqui criamos a tabela de funcionários usando os UDTs "nome_completo" e "endereco".  A keyword "frozen" é usada para definição da UDT como o tipo da coluna
+CREATE TABLE mack_database.funcionarios (
+  id uuid PRIMARY KEY,
+  nome frozen <nome_completo>,
+  report_direto set<frozen <nome_completo>>,     // a collection set
+  enderecos map<text, frozen <endereco>>     // a collection map
+);  
+
+4.4) Aqui vamos inserir o nome dentro da coluna de nome completo
+INSERT INTO mack_database.funcionarios (id, nome) 
+VALUES (62c36092-82a1-3a00-93d1-46196ee77204, {primeiro_nome: 'Fulano', ultimo_nome: 'da Silva'});
+
+
+4.5) Aqui vamos vincular um endereço da casa dentro da tabela
+UPDATE mack_database.funcionarios 
+SET enderecos = enderecos + {'casa': { rua: '191 Rue St. Charles', cidade: 'Paris', cep: 75015, telefone: {'33 6 78 90 12 34'}}} 
+WHERE id=62c36092-82a1-3a00-93d1-46196ee77204;
+
+4.6) Vamos buscar o nome completo de um usuário
+SELECT nome FROM mack_database.funcionarios 
+WHERE id=62c36092-82a1-3a00-93d1-46196ee77204;
+
+4.7) Usando a coluna nome que possuí propriedades de UDT nesse caso conseguimos pegar tanto o primeiro quanto do último ano
+SELECT nome.ultimo_nome 
+FROM mack_database.funcionarios 
+WHERE id=62c36092-82a1-3a00-93d1-46196ee77204;
+
+4.8) Agora vamos filtrar uma coluna com UDT. Para fazer isso precisamos criar um índice e então rodar uma consulta com alguma considional
+CREATE INDEX on mack_database.funcionarios (nome);
+
+SELECT id 
+FROM mack_database.funcionarios 
+WHERE nome = {primeiro_nome: 'Fulano', ultimo_nome: 'da Silva'};
+
+
+4.9) Aqui vamos inserir o nome de algumas pessoas que se reporta ao "Fulano". Um ponto importante é que usando a keyqord "Frozen" não se pode fazer update em partes separadas de uma UDT, o valor inteiro deve ser sobrescrito. O Cassandra trata o valor de um frozen UDT como um blob.
+UPDATE mack_database.funcionarios 
+SET report_direto = { ( 'Beltrano', 'dos Santos'), ( 'Sicrano', 'de Souza') } 
+WHERE id=62c36092-82a1-3a00-93d1-46196ee77204;
+
+INSERT INTO mack_database.funcionarios (id, report_direto) 
+VALUES ( 7db1a490-5878-11e2-bcfd-0800200c9a66, { ('José', 'da Silva') } );
+
+Aqui vamos realizar um select para pegar todos os funcionários que se reportam ao Fulano
+SELECT report_direto 
+FROM mack_database.funcionarios;
+
+---------------
+5) Batching
+---------------
+
+5.1) Aqui vamos usar o Batching para alguns updates condicionais. O Batch é usado quando queremos colocar mais de uma instruçao em um comando especifico.
+CREATE TABLE compras (
+     usuario text,
+     saldo int static,
+     despesa_id int,
+     montante int,
+     descricao text,
+     pago boolean,
+     PRIMARY KEY (usuario, despesa_id)
+  );
+
+
+BEGIN BATCH
+  INSERT INTO compras (usuario, saldo) VALUES ('user1', -8) IF NOT EXISTS;
+  INSERT INTO compras (usuario, despesa_id, montante, descricao, pago)
+    VALUES ('user1', 1, 8, 'burrito', false);
+APPLY BATCH;
+
+SELECT * FROM compras;
+
+  
+BEGIN BATCH
+  UPDATE compras SET saldo = -208 WHERE usuario='user1' IF saldo = -8;
+  INSERT INTO compras (usuario, despesa_id, montante, descricao, pago)
+    VALUES ('user1', 2, 200, 'hotel room', false);
+APPLY BATCH;
+
+SELECT * FROM compras;
+
+BEGIN BATCH
+  UPDATE purchases SET balance=-200 WHERE user='user1' IF balance=-208;
+  UPDATE purchases SET paid=true WHERE user='user1' AND expense_id=1 IF paid=false;
+APPLY BATCH;
+  
+SELECT * FROM purchases;
+
+
+
+
+
+-------
+6) TTL
+-------
+
+Aqui vamos trabalhar com o conceito de TTL
+CREATE TABLE mack_database.clicks (
+  userid uuid,
+  url text,
+  date timestamp,  
+  name text,
+  PRIMARY KEY (userid, url)
+);
+
+
+INSERT INTO mack_database.clicks (userid, url, date, name)
+VALUES (3715e600-2eb0-11e2-81c1-0800200c9a66,'http://pataxo.org','2013-10-09', 'Maria') USING TTL 100;
+
+INSERT INTO mack_database.clicks (userid, url, date, name)
+VALUES (3715e600-2eb0-11e2-81c1-0800200c9a67,'http://tupa.org','2014-10-09', 'Francisca') USING TTL 200;
+
+INSERT INTO mack_database.clicks (userid, url, date, name)
+VALUES (3715e600-2eb0-11e2-81c1-0800200c9a68,'http://pelevermelha.org','2015-10-09', 'Marcela') USING TTL 300;
+
+INSERT INTO mack_database.clicks (userid, url, date, name)
+VALUES (3715e600-2eb0-11e2-81c1-0800200c9a69,'http://tupi.org','2016-10-09', 'Manoela') USING TTL 400;
+
+INSERT INTO mack_database.clicks (userid, url, date, name)
+VALUES (3715e600-2eb0-11e2-81c1-0800200c9a70,'http://guarani.org','2017-10-09', 'Maysa') USING TTL 500;
+
+INSERT INTO mack_database.clicks (userid, url, date, name)
+VALUES (3715e600-2eb0-11e2-81c1-0800200c9a71,'http://xavante.org','2018-10-09', 'Mayara') USING TTL 600;
+
+
+
+SELECT TTL (name) 
+FROM mack_database.clicks
+WHERE url = 'http://pataxo.org' ALLOW FILTERING;
+
+UPDATE mack_database.clicks USING TTL 432000 
+SET name = 'n4m3c4ng3d'
+WHERE userid = 3715e600-2eb0-11e2-81c1-0800200c9a66 AND url = 'http://pataxo.org';
+
+SELECT TTL (name) 
+FROM mack_database.clicks
+WHERE url = 'http://pataxo.org' ALLOW FILTERING;
+
+
+
+------------------------
+7) Deleção de registros
+------------------------
+
+DELETE name 
+FROM mack_database.clicks 
+WHERE userid = 3715e600-2eb0-11e2-81c1-0800200c9a66 AND url = 'http://pataxo.org';
+
+SELECT *
+FROM mack_database.clicks
+WHERE url = 'http://pataxo.org' ALLOW FILTERING;
+
+DELETE FROM mack_database.clicks 
+WHERE userid = 3715e600-2eb0-11e2-81c1-0800200c9a66 AND url = 'http://pataxo.org';
+
+SELECT *
+FROM mack_database.clicks
+WHERE url = 'http://pataxo.org' ALLOW FILTERING;

@@ -1,0 +1,145 @@
+NoSQL
+- Non SQL
+- Non relational
+- Not only SQL
+
+- Escalabilidade Horizontal
+- Aumento de disponibilidade
+- Flexibilidade na modelagem
+- Disponibilidade sobre consistência
+
+- Consistência eventual (Milisegundos, acredite)
+- WAL está aí para salvar a todos (Write-Ahead Logging)
+- Exigir integridade referencial é como pegar um carro de Fórmula 1 para fazer rally!
+
+Tipos
+- Colunar
+- Key–value
+- Documentos
+- Grafos
+- Multi modelo
+
+A era em que só pode existir os relacionais está no fim...
+A era do Polyglot Persistence [1][1.1] começou!
+Multiplas formas de persistir os seus dados 
+
+
+Com perguntas diferentes, precisamos de respostas diferentes  
+
+Quando saímos do mundo do relacional, temos que lidar com tradeoffs difíceis
+
+Características Head-2-Head
+- Ponto único de Falha: 	Cassandra 1 x 0 Relacional
+- Cross Datacenter: 		Cassandra 2 x 0 Relacional
+- Escalabilidade linear: 	Cassandra 3 x 0 Relacional
+- Modelo de dados: 			architectureCassandra 3 x 1 Relacional
+
+Mas se o NoSQL é a respeito de não ter um modelo, porque insistir na modelagem de dados?!
+- O modelo de dados é ativo e vivo
+- O modelo de dados define os requisitos de negócios... 
+- ...E por consequência define a estrutura de dados
+- Os bancos relacionais são apenas um modelo 
+
+Os modelos relacionais são orientados à relações (duh!) usando:
+- As 5 normas formais (já tem a 6a, mas é discutível)
+- Precisa de chaves estrangeiras
+- Precisa de JOINS para relacionar as entidades de negócios
+
+Como o Cassandra faz?
+- O modelo é feito usando Big Table[2] 
+- A linha é um registro com um número alto de colunas 
+
+ACID x CAP
+A - Atomicidade: Tudo ou nada
+C - Consistência: Somente dados válidos são gravados
+I - Isolamento: Uma operação por vez
+D - Durabilidade: Uma vez "comitado", fica assim para sempre
+
+CAP
+C - Consistência: Todos os dados no cluster
+A - Availability (Disponibilidade): O Cluster sempre aceita escrita
+P - Partition Tolerance: Os nós no cluster não podem conversar entre si
+
+CAP
+C - Consistência: Todos os dados no cluster (O cassandra deixa ajustar esse ponto aqui do teorema)
+A - Availability (Disponibilidade): O Cluster sempre aceita escrita
+P - Partition Tolerance: Os nós no cluster não podem conversar entre si
+
+Modelagem relacional
+- Dados
+- Modelos
+- Aplicação
+
+Modelagem no Cassandra
+- Aplicação
+- Modelos
+- Dados
+
+Como o Cassandra armazena os dados?
+- Os dados pertencem a um nó e são replicados 
+- Os lookups de linhas são rápidos 
+- Os dados são distribuídos randomicamente no cluster
+
+Conceito Relacional - Sequências de registros
+- Auto-criação de IDs
+- Garante unicidade
+- Depende apenas de um servidor (SVOT)
+
+Conceito do Cassandra - Não há sequências
+- Sequências são difíceis em um sistema distribuído
+- Sequências requerem locks (O que mata a performance)
+- O que fazer? (1) Usar parte dos dados para criação de um índice único, ou (2) UUID (universal unique identifier) para evitar colisões
+
+Conceito do Cassandra - Modelo de Entidade
+- Um modelo estático pode ser alterado dinâmicamente sem downtime
+
+Desmornalização?
+- Recombinar os registros para uma linha só
+- É usado nos bancos de dados relacionais para evitar joins complexos
+- Combinar as tabelas para uma única visão
+- Sem joins
+- Tudo em uma tabela para proporcionar uma leitura rápida dos dados.
+
+Conceito do Cassandra - One-to-Many (Um para muitos)
+- Relacionamento sem ser relacional
+- Usado quando temos um cenário de negócios em que temos uma relação 1:n e que não queremos colocar chave estrangeira
+- Conceito de wide-row
+- Escrito em duas tabelas sem necessidade de join
+
+Conceito do Cassandra - Many-to-Many (Muitos para muitos)
+- A modelagem é feita em ambos os lados da view
+- Há a referência nos dois lados 
+
+Conceito do relacional - Transações
+- Simples de usar
+- Em cenários de muita concorrência podem tornar a performance muito ruim
+- As formas normais forçam as propriedades ACID que por sua vez performam escrita em muitas tabelas
+
+Conceito maluco - Você precisa mesmo de uma transação?
+- Transações assincronas
+- Este artigo fala sobre esse tipo de design [3]
+- Em outras palavras: Você REALMENTE precisa de um design baseado em bancos de dados relacionais? [4], [5], [6], [7], [8], [9], [10]
+
+Conceito do Cassandra - Qualidade da transação
+- Requer lock o que é altamente custoso em sistemas distribuidos
+- O Cassandra pode realizar isolamento a nível de linhas
+- Batches atômicos para a persistência dos dados [11]
+- Track do que aconteceu com o dado
+- Usa o timestamp para preservar a ordem
+
+-------------
+Referências
+-------------
+
+[1] - https://martinfowler.com/bliki/PolyglotPersistence.html
+[1.1] - http://www.jamesserra.com/archive/2015/07/what-is-polyglot-persistence/
+[2] - https://static.googleusercontent.com/media/research.google.com/pt-BR//archive/bigtable-osdi06.pdf
+[3] - http://www.enterpriseintegrationpatterns.com/docs/IEEE_Software_Design_2PC.pdf
+[4] - http://nelsonbassetto.com/blog/2013/05/event-driven-architecture-parte-2/
+[5] - https://en.wikipedia.org/wiki/Complex_event_processing
+[6] - http://nelsonbassetto.com/blog/2012/10/synchronous-x-asynchronous-services-parte-1/
+[7] - http://nelsonbassetto.com/blog/2013/05/event-driven-architecture-parte-1/
+[8] - http://nelsonbassetto.com/blog/2013/01/as-principais-funes-de-um-esb-enterprise-service-bus/
+[9] - http://nelsonbassetto.com/blog/2012/10/synchronous-x-asynchronous-services-parte-2/
+[10] - http://nelsonbassetto.com/blog/2011/07/tradeoff-analysis/
+[11] - https://stackoverflow.com/questions/28348717/how-do-atomic-batches-work-in-cassandra
